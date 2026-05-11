@@ -1,1 +1,14 @@
 # dualchemx
+
+DualChemX - open-source 2D chemical viewer (Python, Qt, PySide, RDKit).
+
+Features:  
+ - supported formats: SDF, SMILES  
+ - molecular descriptors  
+
+License: GNU GENERAL PUBLIC LICENSE Version 3 (GPL-3.0-only)  
+Source code: https://github.com/dualword/dualchemx  
+
+<p align="center">
+<img src="dualchemx.png" height="100" width="150"/>
+</p>
