@@ -4,6 +4,7 @@
         "dualchemx/DualChemX.py",
         "dualchemx/MainWindow.py",
         "dualchemx/ScreenBrowse.py",
+        "dualchemx/ScreenTable.py",
         "dualchemx/main.py"
     ]
 }

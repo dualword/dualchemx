@@ -27,6 +27,7 @@ from PySide6.QtCore import (
     QSize, QSettings, QDir
 )
 from ScreenBrowse import ScreenBrowse
+from ScreenTable import ScreenTable
 from DualChemX import IScreen
 
 class MainWindow(QMainWindow, IScreen):
@@ -51,7 +52,6 @@ class MainWindow(QMainWindow, IScreen):
         toolbar.addAction(actEnter)
         actEnter = QAction(self.style().standardIcon(QStyle.SP_TrashIcon), "Clear", self)
         actEnter.setToolTip("Delete All")
-        actEnter.triggered.connect(lambda: self.db.deleteAll())
         toolbar.addAction(actEnter)
         toolbar.addSeparator()
         actAbout = QAction(self.style().standardIcon(QStyle.SP_FileDialogInfoView), "About", self)
@@ -62,14 +62,18 @@ class MainWindow(QMainWindow, IScreen):
         "<a href='https://github.com/dualword/dualchemx'>https://github.com/dualword/dualchemx</a><br/>")
         )
         toolbar.addAction(actAbout)
-        stacked_widget = QStackedWidget(self)
         screen1 = ScreenBrowse(self)
-        stacked_widget.addWidget(screen1)
+        screen2 = ScreenTable(self)
+        self.stacked_widget = QStackedWidget(self)
+        self.stacked_widget.addWidget(screen1)
+        self.stacked_widget.addWidget(screen2)
+        actEnter.triggered.connect(lambda: (self.db.deleteAll(), self.stacked_widget.currentWidget().refresh()))
         menu_list = QListWidget()
         menu_list.setViewMode(QListWidget.IconMode)
         menu_list.setIconSize(QSize(64, 64))
         menu_list.setMaximumWidth(80)
         menu_list.addItem(QListWidgetItem(self.style().standardIcon(QStyle.SP_DesktopIcon), "Browse", menu_list))
+        menu_list.addItem(QListWidgetItem(self.style().standardIcon(QStyle.SP_DesktopIcon), "Table", menu_list))
         menu_list.setStyleSheet("""
             QListWidget {
                 width: 200px;
@@ -79,16 +83,16 @@ class MainWindow(QMainWindow, IScreen):
         """)
         menu_list.itemClicked.connect(
             lambda: (index := menu_list.row(menu_list.currentItem()),
-            stacked_widget.setCurrentIndex(index),
-            self.db.updated.connect(stacked_widget.widget(index).refresh))
+            self.stacked_widget.setCurrentIndex(index),
+            self.stacked_widget.widget(index).refresh())
         )
         layout = QHBoxLayout()
         layout.addWidget(menu_list, 1)
-        layout.addWidget(stacked_widget, 5)
+        layout.addWidget(self.stacked_widget, 5)
         w = QWidget()
         w.setLayout(layout)
         self.setCentralWidget(w)
-        self.db.updated.connect(stacked_widget.currentWidget().refresh)
+        self.db.updated.connect(self.stacked_widget.currentWidget().refresh)
 
     def closeEvent(self, event):
         QSettings().setValue("geom", self.saveGeometry())
@@ -101,6 +105,7 @@ class MainWindow(QMainWindow, IScreen):
             self._fname = path
             QSettings().setValue("lastFile", self._fname)
             self.db.loadSdf(path)
+            self.stacked_widget.currentWidget().refresh()
 
     def enterSmiles(self):
         str, ok = QInputDialog.getText(self, '', "Enter SMILES", QLineEdit.Normal);

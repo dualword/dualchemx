@@ -17,7 +17,10 @@
 # along with DualChemX.  If not, see <http://www.gnu.org/licenses/>.
 # ###
 
-from PySide6.QtCore import QObject, Slot, Property, Signal, QSettings, QDir, QByteArray
+from PySide6.QtCore import (
+    Qt, QObject, Slot, Property, Signal, QSettings, QDir, QByteArray
+)
+
 from rdkit import Chem
 from rdkit.Chem.Draw import rdMolDraw2D
 from rdkit.Chem import Descriptors
