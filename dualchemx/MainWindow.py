@@ -28,6 +28,7 @@ from PySide6.QtCore import (
 )
 from ScreenBrowse import ScreenBrowse
 from ScreenTable import ScreenTable
+from ScreenChart import ScreenChart
 from DualChemX import IScreen
 
 class MainWindow(QMainWindow, IScreen):
@@ -35,6 +36,7 @@ class MainWindow(QMainWindow, IScreen):
         super().__init__(p)
         IScreen.__init__(self)
         self.setWindowTitle("DualChemX")
+        self.statusBar().setVisible(True)
         if QSettings().value("geom"):
             self.restoreGeometry(QSettings().value("geom"))
         else:
@@ -64,16 +66,20 @@ class MainWindow(QMainWindow, IScreen):
         toolbar.addAction(actAbout)
         screen1 = ScreenBrowse(self)
         screen2 = ScreenTable(self)
+        screen3 = ScreenChart(self)
         self.stacked_widget = QStackedWidget(self)
         self.stacked_widget.addWidget(screen1)
         self.stacked_widget.addWidget(screen2)
-        actEnter.triggered.connect(lambda: (self.db.deleteAll(), self.stacked_widget.currentWidget().refresh()))
+        self.stacked_widget.addWidget(screen3)
+        actEnter.triggered.connect(lambda: (self.db.deleteAll(), self.statusBar().clearMessage(),
+        self.stacked_widget.currentWidget().refresh()))
         menu_list = QListWidget()
         menu_list.setViewMode(QListWidget.IconMode)
         menu_list.setIconSize(QSize(64, 64))
         menu_list.setMaximumWidth(80)
         menu_list.addItem(QListWidgetItem(self.style().standardIcon(QStyle.SP_DesktopIcon), "Browse", menu_list))
         menu_list.addItem(QListWidgetItem(self.style().standardIcon(QStyle.SP_DesktopIcon), "Table", menu_list))
+        menu_list.addItem(QListWidgetItem(self.style().standardIcon(QStyle.SP_DesktopIcon), "Chart", menu_list))
         menu_list.setStyleSheet("""
             QListWidget {
                 width: 200px;
@@ -105,10 +111,12 @@ class MainWindow(QMainWindow, IScreen):
             self._fname = path
             QSettings().setValue("lastFile", self._fname)
             self.db.loadSdf(path)
+            self.statusBar().showMessage(path)
             self.stacked_widget.currentWidget().refresh()
 
     def enterSmiles(self):
         str, ok = QInputDialog.getText(self, '', "Enter SMILES", QLineEdit.Normal);
         if ok and str:
             self.db.addSmiles(str)
+        self.stacked_widget.currentWidget().refresh()
 

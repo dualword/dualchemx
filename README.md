@@ -12,4 +12,5 @@ Source code: https://github.com/dualword/dualchemx
 <p align="center">
 <img src="dualchemx.png" height="100" width="150"/>
 <img src="dualchemx-table.png" height="100" width="150"/>
+<img src="dualchemx-chart.png" height="100" width="150"/>
 </p>
