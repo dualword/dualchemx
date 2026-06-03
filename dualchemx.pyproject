@@ -5,6 +5,7 @@
         "dualchemx/MainWindow.py",
         "dualchemx/ScreenBrowse.py",
         "dualchemx/ScreenChart.py",
+        "dualchemx/ScreenSim.py",
         "dualchemx/ScreenTable.py",
         "dualchemx/main.py"
     ]

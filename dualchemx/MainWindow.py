@@ -29,6 +29,7 @@ from PySide6.QtCore import (
 from ScreenBrowse import ScreenBrowse
 from ScreenTable import ScreenTable
 from ScreenChart import ScreenChart
+from ScreenSim import ScreenSim
 from DualChemX import IScreen
 
 class MainWindow(QMainWindow, IScreen):
@@ -65,12 +66,14 @@ class MainWindow(QMainWindow, IScreen):
         )
         toolbar.addAction(actAbout)
         screen1 = ScreenBrowse(self)
-        screen2 = ScreenTable(self)
-        screen3 = ScreenChart(self)
+        screen2 = ScreenSim(self)
+        screen3 = ScreenTable(self)
+        screen4 = ScreenChart(self)
         self.stacked_widget = QStackedWidget(self)
         self.stacked_widget.addWidget(screen1)
         self.stacked_widget.addWidget(screen2)
         self.stacked_widget.addWidget(screen3)
+        self.stacked_widget.addWidget(screen4)
         actEnter.triggered.connect(lambda: (self.db.deleteAll(), self.statusBar().clearMessage(),
         self.stacked_widget.currentWidget().refresh()))
         menu_list = QListWidget()
@@ -78,6 +81,7 @@ class MainWindow(QMainWindow, IScreen):
         menu_list.setIconSize(QSize(64, 64))
         menu_list.setMaximumWidth(80)
         menu_list.addItem(QListWidgetItem(self.style().standardIcon(QStyle.SP_DesktopIcon), "Browse", menu_list))
+        menu_list.addItem(QListWidgetItem(self.style().standardIcon(QStyle.SP_DesktopIcon), "Sim", menu_list))
         menu_list.addItem(QListWidgetItem(self.style().standardIcon(QStyle.SP_DesktopIcon), "Table", menu_list))
         menu_list.addItem(QListWidgetItem(self.style().standardIcon(QStyle.SP_DesktopIcon), "Chart", menu_list))
         menu_list.setStyleSheet("""
@@ -98,7 +102,9 @@ class MainWindow(QMainWindow, IScreen):
         w = QWidget()
         w.setLayout(layout)
         self.setCentralWidget(w)
-        self.db.updated.connect(self.stacked_widget.currentWidget().refresh)
+        self.db.updated.connect(lambda: (index := menu_list.row(menu_list.currentItem()),
+        self.stacked_widget.setCurrentIndex(index),
+        self.stacked_widget.widget(index).refresh()))
 
     def closeEvent(self, event):
         QSettings().setValue("geom", self.saveGeometry())
