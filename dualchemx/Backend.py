@@ -58,6 +58,9 @@ class Backend(QObject):
         if not self._smiles: return ""
         return self._smiles
 
+    def getSmiles(self, idx):
+        return Chem.MolToSmiles(self._mols[idx].mol, isomericSmiles=True)
+
     @Property(int, notify=updated)
     def currentIndex(self): return self._index
 

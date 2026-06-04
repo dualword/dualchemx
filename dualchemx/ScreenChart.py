@@ -26,7 +26,7 @@ from PySide6.QtCore import (
 )
 from PySide6.QtGui import QPainter
 from DualChemX import IScreen
-from PySide6.QtCharts import QChart, QChartView, QBarSet, QBarSeries, QBarCategoryAxis, QValueAxis
+from PySide6.QtCharts import QChart, QChartView, QBarSet, QBarSeries, QBarCategoryAxis, QValueAxis, QScatterSeries
 
 class ScreenChart(QWidget, IScreen):
     def __init__(self, p = None):
@@ -52,9 +52,9 @@ class ScreenChart(QWidget, IScreen):
 
     def onDescriptorChanged(self, idx):
         self.desc = self.dropdown.itemText(idx)
-        self.createHistogram()
+        self.createChart()
 
-    def createHistogram(self):
+    def createChart(self):
         self.chart_view.setChart(QChart())
         chart = QChart()
         chart.setAnimationOptions(QChart.SeriesAnimations)
@@ -62,10 +62,26 @@ class ScreenChart(QWidget, IScreen):
         data = [ext(m) for m in self.db._mols]
         if not data:
             return
-        series = QBarSeries()
-        barSet = QBarSet(self.desc)
-        for v in data:
-            barSet.append(v)
-        series.append(barSet)
+
+        series = QScatterSeries()
+        series.setName(self.desc);
+        series.setMarkerShape(QScatterSeries.MarkerShapeCircle);
+        series.setMarkerSize(5.0);
+
+        for index, weight in enumerate(data):
+            series.append(index + 1, weight)
+
         chart.addSeries(series)
+        axis_x = QValueAxis()
+        axis_x.setTitleText("Molecule Index")
+        axis_x.setLabelFormat("%d")
+        chart.addAxis(axis_x, Qt.AlignmentFlag.AlignBottom)
+        series.attachAxis(axis_x)
+
+        axis_y = QValueAxis()
+        axis_y.setTitleText(self.desc)
+        axis_y.setLabelFormat("%.2f")
+        chart.addAxis(axis_y, Qt.AlignmentFlag.AlignLeft)
+        series.attachAxis(axis_y)
         self.chart_view.setChart(chart)
+
