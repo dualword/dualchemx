@@ -28,6 +28,7 @@ from PySide6.QtCore import (
 )
 from ScreenBrowse import ScreenBrowse
 from ScreenTable import ScreenTable
+from ScreenGrid import ScreenGrid
 from ScreenChart import ScreenChart
 from ScreenSim import ScreenSim
 from DualChemX import IScreen
@@ -66,8 +67,8 @@ class MainWindow(QMainWindow, IScreen):
         )
         toolbar.addAction(actAbout)
         screen1 = ScreenBrowse(self)
-        screen2 = ScreenSim(self)
-        screen3 = ScreenTable(self)
+        screen2 = ScreenTable(self)
+        screen3 = ScreenGrid(self)
         screen4 = ScreenChart(self)
         self.stacked_widget = QStackedWidget(self)
         self.stacked_widget.addWidget(screen1)
@@ -79,10 +80,11 @@ class MainWindow(QMainWindow, IScreen):
         menu_list = QListWidget()
         menu_list.setViewMode(QListWidget.IconMode)
         menu_list.setIconSize(QSize(64, 64))
+        menu_list.setMinimumWidth(80)
         menu_list.setMaximumWidth(80)
         menu_list.addItem(QListWidgetItem(self.style().standardIcon(QStyle.SP_DesktopIcon), "Browse", menu_list))
-        menu_list.addItem(QListWidgetItem(self.style().standardIcon(QStyle.SP_DesktopIcon), "Sim", menu_list))
         menu_list.addItem(QListWidgetItem(self.style().standardIcon(QStyle.SP_DesktopIcon), "Table", menu_list))
+        menu_list.addItem(QListWidgetItem(self.style().standardIcon(QStyle.SP_DesktopIcon), "Grid", menu_list))
         menu_list.addItem(QListWidgetItem(self.style().standardIcon(QStyle.SP_DesktopIcon), "Chart", menu_list))
         menu_list.setStyleSheet("""
             QListWidget {
